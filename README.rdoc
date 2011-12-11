@@ -1,0 +1,34 @@
+== Synopsys
+Ruby Enumerable extension. Main idea is lazy computations within enumerators.
+
+== Usage
+Install as a gem:
+  sudo gem install deferred_enum
+
+This gem introduces DeferredEnumerator class:
+  ary = [1, 2, 3, 4]
+  deferred = ary.defer                 # #<DeferredEnumerator: [1, 2, 3, 4]:each>
+
+DeferredEnumerator brings some optimizations to all?, any? and none? predicates
+  deferred.all?(&:even?)               # Will stop iteration after first false-result = 1 iteration
+  deferred.none?(&:even?)              # 2 iterations
+  deferred.any?(&:even?)               # 2 iterations
+
+It also introduces lazy versions of Enumerable's #select, #map and #reject methods
+  deferred.map { |i| i + 1 }           # #<DeferredEnumerator: #<Enumerator::Generator>:each>
+  deferred.select { |i| i.even? }      # #<DeferredEnumerator: #<Enumerator::Generator>:each>
+  deferred.reject { |i| i.odd? }       # #<DeferredEnumerator: #<Enumerator::Generator>:each>
+
+So you can safely chain your filters, they won't be treated as arrays:
+  deferred.map(&:succ).select(&:even?) # #<DeferredEnumerator: #<Enumerator::Generator>:each>
+
+You can build chains of Enumerables:
+  deferred.concat([2]).to_a            # [1, 2, 3, 4, 2]
+
+Or append elements to the end of enumerator:
+  deferred << 2
+
+You can even remove duplicates from enumerator, though this operation can be tough:
+  deferred.uniq                        # #<DeferredEnumerator: #<Enumerator::Generator>:each>
+
+There are many other methods in DeferredEnumerator, please refer to documentation.
