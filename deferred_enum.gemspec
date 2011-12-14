@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/take-five/deferred_enum"
   s.summary     = %q{Introduces lazy computations to Enumerable}
   s.description = File.read(File.expand_path('../README.rdoc', __FILE__))
-  s.date        = Time.now.strftime('%Y-%m-%d')
+  s.date        = "2011-12-15"
 
   s.rubyforge_project = "deferred_enum"
 

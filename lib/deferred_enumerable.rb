@@ -27,32 +27,26 @@ module DeferredEnumerable
   end
 
   # Returns a new enumerator with the results of running block once for every element in enum.
-  def collect # :yields: obj
+  def collect(&block) # :yields: obj
     return self unless block_given?
 
-    DeferredEnumerator.new do |yielder|
-      each { |entry| yielder << yield(entry) }
-    end
+    DeferredEnumerator::Map.new(self, block)
   end
   alias map collect
 
   # Returns a enumerator containing all elements of enum for which block is not false
-  def select # :yields: obj
+  def select(&block) # :yields: obj
     return self unless block_given?
 
-    DeferredEnumerator.new do |yielder|
-      each { |entry| yielder << entry if yield(entry) }
-    end
+    DeferredEnumerator::Select.new(self, block)
   end
   alias find_all select
 
   # Returns a enumerator containing all elements of enum for which block is false
-  def reject # :yields: obj
+  def reject(&block) # :yields: obj
     return self unless block_given?
 
-    DeferredEnumerator.new do |yielder|
-      each { |entry| yielder << entry unless yield(entry) }
-    end
+    select { |e| !block.call(e) }
   end
 
   # Returns a new enumerator that is a one-dimensional flattening of this enumerator (recursively).
@@ -125,7 +119,7 @@ module DeferredEnumerable
     raise TypeError, 'Integer (> 0) expected' unless n.is_a?(Fixnum) && n > 0
 
     DeferredEnumerator.new do |yielder|
-      each { |entry| yielder << entry if (n -= 1) >= 0}
+      each { |entry| yielder << entry if (n -= 1) >= 0 }
     end
   end
 
